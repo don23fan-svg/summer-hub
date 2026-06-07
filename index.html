@@ -85,17 +85,44 @@
   .ev .body{flex:1;}
   .ev .body .t{font-weight:600;font-size:14.5px;line-height:1.25;}
   .ev .body .time{font-size:12px;color:#7a6a52;margin-top:1px;}
-  .ev .del{position:absolute;top:8px;right:9px;border:none;background:none;color:#b8a890;cursor:pointer;font-size:15px;line-height:1;opacity:.5;}
-  .ev .del:hover{opacity:1;color:var(--sun-deep);}
+  .ev.tappable{cursor:pointer;transition:border-color .12s,transform .08s;}
+  .ev.tappable:active{transform:scale(.99);}
+  .ev .edit-hint{flex:none;align-self:center;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    color:#b8a890;opacity:0;transition:.12s;}
+  .ev.tappable:hover{border-color:var(--sun);}
+  .ev.tappable:hover .edit-hint{opacity:1;color:var(--sun-deep);}
   .empty{font-size:13.5px;color:#9a8a70;font-style:italic;padding:14px 4px;text-align:center;}
-  .addrow{display:flex;gap:7px;margin-top:13px;}
-  .addrow input,.addrow select{font-family:inherit;font-size:13px;border:1.5px solid var(--line);background:var(--paper);
-    border-radius:10px;padding:9px 10px;}
-  .addrow .ti{flex:1;min-width:0;}
-  .addrow .tm{width:74px;}
-  .addrow .ws{width:84px;}
-  .addrow .add{background:var(--sun);border:none;color:#fff;font-weight:700;border-radius:10px;width:42px;cursor:pointer;font-size:20px;}
-  .addrow .add:active{transform:scale(.92);}
+  .addevent{display:block;width:100%;margin-top:13px;background:var(--sun);border:none;color:#fff;
+    font-family:'Spline Sans';font-weight:700;font-size:15px;padding:12px;border-radius:12px;cursor:pointer;transition:transform .08s;}
+  .addevent:active{transform:scale(.98);}
+
+  /* modal */
+  .modal-overlay{position:fixed;inset:0;background:rgba(40,28,14,.5);backdrop-filter:blur(3px);
+    display:none;align-items:flex-start;justify-content:center;z-index:50;padding:48px 16px;overflow-y:auto;}
+  .modal-overlay.open{display:flex;animation:mfade .15s ease;}
+  @keyframes mfade{from{opacity:0;}to{opacity:1;}}
+  .modal{background:var(--paper);border-radius:20px;width:100%;max-width:440px;padding:22px 22px 18px;
+    box-shadow:0 20px 60px rgba(40,28,14,.35);animation:mpop .18s ease;}
+  @keyframes mpop{from{transform:translateY(10px) scale(.98);}to{transform:none;}}
+  .modal-head{display:flex;align-items:center;justify-content:space-between;}
+  .modal-head h3{font-family:'Fraunces';font-weight:900;font-size:23px;}
+  .modal-x{border:none;background:none;font-size:28px;line-height:1;color:#b8a890;cursor:pointer;padding:0 4px;}
+  .modal-date{font-size:13px;font-weight:600;color:var(--sun-deep);letter-spacing:.04em;margin:2px 0 16px;}
+  .ml{display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#9a8a70;margin:0 0 5px 2px;}
+  .mi{width:100%;font-family:'Spline Sans';font-size:16px;border:1.5px solid var(--line);background:var(--paper2);
+    border-radius:12px;padding:12px 13px;color:var(--ink);margin-bottom:14px;}
+  .mi:focus{outline:none;border-color:var(--sun);}
+  .mrow{display:flex;gap:12px;}
+  .mcheck{display:flex;align-items:center;gap:9px;font-size:13.5px;color:#7a6a52;margin:2px 0 4px;cursor:pointer;}
+  .mcheck input{width:18px;height:18px;}
+  .modal-actions{display:flex;align-items:center;gap:9px;margin-top:18px;}
+  .m-save{background:var(--leaf);color:#fff;border:none;font-family:'Spline Sans';font-weight:700;font-size:15px;
+    padding:11px 22px;border-radius:12px;cursor:pointer;}
+  .m-cancel{background:none;border:1.5px solid var(--line);color:#7a6a52;font-family:'Spline Sans';font-weight:600;
+    font-size:14px;padding:10px 16px;border-radius:12px;cursor:pointer;}
+  .m-delete{background:none;border:1.5px solid #d89a9a;color:#b5535a;font-family:'Spline Sans';font-weight:600;
+    font-size:14px;padding:10px 16px;border-radius:12px;cursor:pointer;}
+  .m-save:active,.m-cancel:active,.m-delete:active{transform:scale(.97);}
 
   /* travel banner */
   .travel{background:linear-gradient(100deg,var(--sky),var(--sky-deep));color:#fff;border-radius:12px;
@@ -299,17 +326,7 @@
       <button class="jump" id="jumpToday">Jump to today</button>
       <div id="travelBanner"></div>
       <div class="events" id="events"></div>
-      <div class="addrow">
-        <input class="ti" id="addText" placeholder="Add something…">
-        <input class="tm" id="addTime" placeholder="time">
-        <select class="ws" id="addWho">
-          <option value="fam">Family</option>
-          <option value="ellie">Ellie</option>
-          <option value="carli">Carli</option>
-          <option value="logi">Logistics</option>
-        </select>
-        <button class="add" id="addBtn">+</button>
-      </div>
+      <button class="addevent" id="addEventBtn">+ Add event</button>
     </div>
 
     <div class="card" style="margin-top:18px">
@@ -322,6 +339,45 @@
   </section>
 
   <footer>Shared across the family &middot; Syncs on every device</footer>
+
+  <!-- event add/edit modal -->
+  <div class="modal-overlay" id="eventModal">
+    <div class="modal">
+      <div class="modal-head">
+        <h3 id="emTitle">Add event</h3>
+        <button class="modal-x" id="emClose">×</button>
+      </div>
+      <div class="modal-date" id="emDateLbl">—</div>
+
+      <label class="ml">What</label>
+      <input class="mi" id="emText" placeholder="e.g. Softball practice" autocomplete="off">
+
+      <div class="mrow">
+        <div style="flex:1">
+          <label class="ml">Who</label>
+          <select class="mi" id="emWho">
+            <option value="fam">Family</option>
+            <option value="ellie">Ellie</option>
+            <option value="carli">Carli</option>
+            <option value="logi">Logistics / Driving</option>
+          </select>
+        </div>
+        <div style="width:120px">
+          <label class="ml">Time</label>
+          <input class="mi" id="emTime" placeholder="9–1" autocomplete="off">
+        </div>
+      </div>
+
+      <label class="mcheck"><input type="checkbox" id="emTravel"> Travel / away day (shows ✈️ banner)</label>
+
+      <div class="modal-actions">
+        <button class="m-delete" id="emDelete">Delete</button>
+        <div style="flex:1"></div>
+        <button class="m-cancel" id="emCancel">Cancel</button>
+        <button class="m-save" id="emSave">Save</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -470,7 +526,7 @@ let syncState = "loading";     // loading | synced | syncing | offline
 let pendingWrite = false;      // a write is queued
 let writeTimer = null;
 
-function blank(){ return {checks:{},log:{},sched:{},dels:{}}; }
+function blank(){ return {checks:{},log:{},sched:{},dels:{},seeded:false}; }
 function loadLocal(){
   try{ return Object.assign(blank(), JSON.parse(localStorage.getItem(LS_KEY))||{}); }
   catch(e){ return blank(); }
@@ -496,6 +552,7 @@ async function pullState(){
     const j=await r.json();
     if(j&&j.ok&&j.state){
       DB=Object.assign(blank(), j.state);
+      seedScheduleOnce();   // migrate hardcoded base -> editable records, exactly once
       cacheLocal();
       setSync("synced");
       renderAll();
@@ -504,10 +561,35 @@ async function pullState(){
     throw new Error("bad payload");
   }catch(e){
     // fall back to local cache; we're offline or blocked
+    seedScheduleOnce();
     setSync("offline");
     renderAll();
   }
 }
+
+/* One-time migration: copy the hardcoded SCHEDULE into DB.sched as editable
+   event records, then flip the seeded flag so this never runs again (no dupes).
+   After this, the synced store is the source of truth; the hardcoded SCHEDULE
+   is only ever the initial seed. Existing user-added events are preserved. */
+function seedScheduleOnce(){
+  if(DB.seeded) return;
+  DB.sched = DB.sched || {};
+  Object.keys(SCHEDULE).forEach(key=>{
+    const existing = DB.sched[key] || [];
+    const seededEvents = SCHEDULE[key].map(e=>({
+      id: uid(),
+      w: e.w || "fam",
+      t: e.t,
+      tm: e.tm || "",
+      travel: e.travel ? 1 : 0
+    }));
+    // base events first, then any events the user already added before migration
+    DB.sched[key] = seededEvents.concat(existing);
+  });
+  DB.seeded = true;
+  save();
+}
+function uid(){ return "e"+Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
 
 /* push full state to backend (debounced); always cache locally first */
 function save(){
@@ -574,13 +656,12 @@ let viewDate = new Date();
   if(viewDate>SUMMER_END)viewDate=new Date(SUMMER_END);
 })();
 
-/* events for a day = base schedule (minus deletes) + user adds */
+/* events for a day come entirely from the synced store (DB.sched), which was
+   seeded from the base schedule once and is now the source of truth.
+   All events are editable. */
 function eventsFor(key){
-  const base=(SCHEDULE[key]||[]).map((e,i)=>({...e,_src:"base",_i:i}));
-  const dels=DB.dels[key]||[];
-  const kept=base.filter(e=>!dels.includes(e._i));
-  const adds=(DB.sched[key]||[]).map((e,i)=>({...e,_src:"add",_i:i}));
-  return kept.concat(adds);
+  const list=(DB.sched[key]||[]).map(e=>({...e}));
+  return list;
 }
 
 /* ============ RENDER: schedule ============ */
@@ -602,35 +683,65 @@ function renderDay(){
   }
   box.innerHTML=show.map(e=>{
     const w=e.w||"fam";
-    return `<div class="ev">
+    return `<div class="ev tappable" data-id="${e.id}">
       <div class="who ${w}"><span>${WHO_LABEL[w]||"Fam"}</span></div>
       <div class="body"><div class="t">${esc(e.t)}</div>${e.tm?`<div class="time">${esc(e.tm)}</div>`:""}</div>
-      <button class="del" data-src="${e._src}" data-i="${e._i}" title="Remove">×</button>
+      <span class="edit-hint">edit</span>
     </div>`;
   }).join("");
 
-  box.querySelectorAll(".del").forEach(b=>b.onclick=()=>{
-    const i=+b.dataset.i;
-    if(b.dataset.src==="base"){
-      DB.dels[key]=DB.dels[key]||[]; if(!DB.dels[key].includes(i))DB.dels[key].push(i);
-    }else{
-      DB.sched[key].splice(i,1);
-    }
-    save();renderDay();
-  });
+  // tap any event to edit it
+  box.querySelectorAll(".ev.tappable").forEach(el=>el.onclick=()=>openEventModal(key, el.dataset.id));
 }
 
-function addEvent(){
-  const t=document.getElementById("addText").value.trim();
-  if(!t)return;
-  const tm=document.getElementById("addTime").value.trim();
-  const w=document.getElementById("addWho").value;
-  const key=ymd(viewDate);
-  DB.sched[key]=DB.sched[key]||[];
-  DB.sched[key].push({w,t,tm});
-  document.getElementById("addText").value="";
-  document.getElementById("addTime").value="";
-  save();renderDay();
+/* ============ EVENT MODAL: add / edit / delete ============ */
+let modalCtx = null; // {key, id|null}
+
+function openEventModal(key, id){
+  const list = DB.sched[key] || [];
+  const ev = id ? list.find(e=>e.id===id) : null;
+  modalCtx = { key, id: id || null };
+
+  const d = parseYmd(key);
+  document.getElementById("emTitle").textContent = ev ? "Edit event" : "Add event";
+  document.getElementById("emDateLbl").textContent = DOW[d.getDay()]+", "+MON[d.getMonth()]+" "+d.getDate();
+  document.getElementById("emText").value = ev ? ev.t : "";
+  document.getElementById("emTime").value = ev ? (ev.tm||"") : "";
+  document.getElementById("emWho").value = ev ? (ev.w||"fam") : "fam";
+  document.getElementById("emTravel").checked = ev ? !!ev.travel : false;
+  document.getElementById("emDelete").style.display = ev ? "block" : "none";
+
+  document.getElementById("eventModal").classList.add("open");
+  setTimeout(()=>document.getElementById("emText").focus(), 50);
+}
+function closeEventModal(){
+  document.getElementById("eventModal").classList.remove("open");
+  modalCtx = null;
+}
+function saveEventModal(){
+  if(!modalCtx) return;
+  const t = document.getElementById("emText").value.trim();
+  if(!t){ document.getElementById("emText").focus(); return; }
+  const tm = document.getElementById("emTime").value.trim();
+  const w  = document.getElementById("emWho").value;
+  const travel = document.getElementById("emTravel").checked ? 1 : 0;
+  const key = modalCtx.key;
+  DB.sched[key] = DB.sched[key] || [];
+
+  if(modalCtx.id){
+    const ev = DB.sched[key].find(e=>e.id===modalCtx.id);
+    if(ev){ ev.t=t; ev.tm=tm; ev.w=w; ev.travel=travel; }
+  }else{
+    DB.sched[key].push({ id:uid(), w, t, tm, travel });
+  }
+  save(); renderDay(); closeEventModal();
+}
+function deleteEventModal(){
+  if(!modalCtx || !modalCtx.id) return;
+  if(!confirm("Remove this event for the whole family?")) return;
+  const key = modalCtx.key;
+  DB.sched[key] = (DB.sched[key]||[]).filter(e=>e.id!==modalCtx.id);
+  save(); renderDay(); closeEventModal();
 }
 
 /* ============ RENDER: checklists ============ */
@@ -883,8 +994,14 @@ document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>setTab(b.dataset.tab)
 document.getElementById("prevDay").onclick=()=>{viewDate.setDate(viewDate.getDate()-1);if(viewDate>=SUMMER_START)renderDay();else viewDate.setDate(viewDate.getDate()+1);};
 document.getElementById("nextDay").onclick=()=>{viewDate.setDate(viewDate.getDate()+1);if(viewDate<=SUMMER_END)renderDay();else viewDate.setDate(viewDate.getDate()-1);};
 document.getElementById("jumpToday").onclick=()=>{viewDate=new Date();renderDay();};
-document.getElementById("addBtn").onclick=addEvent;
-document.getElementById("addText").addEventListener("keydown",e=>{if(e.key==="Enter")addEvent();});
+document.getElementById("addEventBtn").onclick=()=>openEventModal(ymd(viewDate), null);
+document.getElementById("emSave").onclick=saveEventModal;
+document.getElementById("emCancel").onclick=closeEventModal;
+document.getElementById("emClose").onclick=closeEventModal;
+document.getElementById("emDelete").onclick=deleteEventModal;
+document.getElementById("emText").addEventListener("keydown",e=>{ if(e.key==="Enter")saveEventModal(); if(e.key==="Escape")closeEventModal(); });
+document.getElementById("emTime").addEventListener("keydown",e=>{ if(e.key==="Enter")saveEventModal(); });
+document.getElementById("eventModal").addEventListener("click",e=>{ if(e.target.id==="eventModal")closeEventModal(); });
 document.getElementById("hardReset").onclick=()=>{
   if(confirm("Erase all checkboxes, history, idea-lab entries and schedule edits for EVERYONE? The base schedule stays. This syncs to all devices.")){
     DB=blank();save();renderAll();
