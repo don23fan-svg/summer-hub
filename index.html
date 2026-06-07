@@ -248,14 +248,14 @@
 
   <!-- tab bar -->
   <nav class="tabbar" id="tabbar">
-    <button class="tab ellie on" data-tab="ellie">Ellie</button>
+    <button class="tab ellie" data-tab="ellie">Ellie</button>
     <button class="tab carli" data-tab="carli">Carli</button>
-    <button class="tab fam" data-tab="fam">Family</button>
+    <button class="tab fam on" data-tab="fam">Family</button>
     <div class="syncdot" id="syncDot" title="Sync status"><span class="d"></span><span class="st">…</span></div>
   </nav>
 
   <!-- ===== KID PANELS ===== -->
-  <section class="panel on" id="panel-ellie">
+  <section class="panel" id="panel-ellie">
     <div class="card kidpanelcard">
       <h2 class="ellie">☀️ Ellie's Day</h2>
       <div class="sub">Do your <b>must-dos</b>, then <b>pick 3</b>. When it's all checked, the phone unlocks — you choose which 3 and when.</div>
@@ -284,7 +284,7 @@
   </section>
 
   <!-- ===== FAMILY PANEL ===== -->
-  <section class="panel" id="panel-fam">
+  <section class="panel on" id="panel-fam">
     <div class="card">
       <h2>📅 The Day</h2>
       <div class="sub">Who's where, who's driving. Tap × to remove, use the row below to add.</div>
@@ -852,6 +852,23 @@ function renderPill(){
 /* render everything from current DB (used after a sync pull) */
 function renderAll(){ renderDay();renderKids();renderLab();renderHistory(); }
 
+/* midnight rollover: if the calendar day changes while the page is open,
+   re-render so the Daily Deal shows the new day (fresh boxes) and yesterday
+   settles into the Track Record. Also pull fresh state so all devices roll together. */
+let _curDay = ymd(new Date());
+function watchRollover(){
+  setInterval(()=>{
+    const now=ymd(new Date());
+    if(now!==_curDay){
+      _curDay=now;
+      renderPill();
+      renderAll();
+      // resync so every device reflects the new day
+      if(syncState!=="syncing") pullState();
+    }
+  }, 30000); // check every 30s
+}
+
 /* ============ tabs ============ */
 function setTab(name){
   document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("on",b.dataset.tab===name));
@@ -877,6 +894,7 @@ renderPill();
 renderAll();
 paintSyncDot();
 pullState().then(startPolling);
+watchRollover();
 
 </script>
 </body>
