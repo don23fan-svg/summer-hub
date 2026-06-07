@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Summer Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,500&family=Spline+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1d1b16;
+    --paper:#f4ece0;
+    --paper2:#ece1d0;
+    --sun:#e8852b;
+    --sun-deep:#c9641a;
+    --sky:#3b7a8c;
+    --sky-deep:#2c5d6b;
+    --berry:#a6406b;
+    --leaf:#5f7a3a;
+    --line:#d8c9b2;
+    --ellie:#a6406b;
+    --carli:#3b7a8c;
+    --good:#5f7a3a;
+    --shadow:rgba(45,30,15,.12);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html,body{background:var(--paper);color:var(--ink);font-family:'Spline Sans',sans-serif;}
+  body{
+    background-image:
+      radial-gradient(circle at 12% 8%, rgba(232,133,43,.10), transparent 40%),
+      radial-gradient(circle at 88% 92%, rgba(59,122,140,.10), transparent 42%);
+    min-height:100vh;padding:18px 14px 60px;
+  }
+  .wrap{max-width:1180px;margin:0 auto;}
+
+  /* ---------- header ---------- */
+  header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:6px;}
+  .brand{line-height:.9;}
+  .brand .kick{font-family:'Spline Sans';font-weight:700;letter-spacing:.32em;text-transform:uppercase;font-size:11px;color:var(--sun-deep);margin-bottom:8px;}
+  .brand h1{font-family:'Fraunces';font-weight:900;font-size:clamp(40px,8vw,76px);letter-spacing:-.02em;}
+  .brand h1 em{font-style:italic;font-weight:500;color:var(--sun-deep);}
+  .today-pill{
+    background:var(--ink);color:var(--paper);border-radius:999px;padding:12px 20px;text-align:right;
+    box-shadow:0 6px 18px var(--shadow);
+  }
+  .today-pill .dow{font-family:'Fraunces';font-weight:600;font-size:20px;}
+  .today-pill .dt{font-size:12px;letter-spacing:.14em;text-transform:uppercase;opacity:.7;}
+  .rule{height:3px;background:repeating-linear-gradient(90deg,var(--ink) 0 22px,transparent 22px 30px);margin:14px 0 22px;opacity:.55;}
+
+  /* ---------- layout ---------- */
+  .grid{display:grid;grid-template-columns:1.15fr .85fr;gap:22px;}
+  @media(max-width:880px){.grid{grid-template-columns:1fr;}}
+
+  .card{
+    background:var(--paper2);border:1.5px solid var(--line);border-radius:18px;padding:20px 20px 22px;
+    box-shadow:0 4px 14px var(--shadow);position:relative;
+  }
+  .card>h2{font-family:'Fraunces';font-weight:900;font-size:24px;letter-spacing:-.01em;margin-bottom:2px;display:flex;align-items:center;gap:9px;}
+  .card>.sub{font-size:12.5px;color:#7a6a52;margin-bottom:16px;}
+  .tag{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:3px 9px;border-radius:999px;color:#fff;}
+
+  /* ---------- day nav ---------- */
+  .daynav{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px;}
+  .daynav button{
+    border:none;background:var(--ink);color:var(--paper);width:42px;height:42px;border-radius:12px;font-size:20px;
+    cursor:pointer;flex:none;transition:transform .12s;font-family:'Fraunces';
+  }
+  .daynav button:active{transform:scale(.9);}
+  .daynav .dlabel{flex:1;text-align:center;}
+  .daynav .dlabel .big{font-family:'Fraunces';font-weight:600;font-size:22px;line-height:1;}
+  .daynav .dlabel .small{font-size:12px;color:#7a6a52;letter-spacing:.1em;text-transform:uppercase;margin-top:3px;}
+  .jump{display:block;margin:0 auto 18px;background:none;border:1.5px solid var(--line);color:#7a6a52;
+    font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;padding:6px 16px;border-radius:999px;cursor:pointer;}
+
+  /* ---------- schedule events ---------- */
+  .events{display:flex;flex-direction:column;gap:9px;min-height:40px;}
+  .ev{display:flex;gap:11px;align-items:flex-start;background:var(--paper);border:1px solid var(--line);
+    border-radius:12px;padding:11px 13px;position:relative;}
+  .ev .who{flex:none;width:46px;text-align:center;}
+  .ev .who span{display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+    color:#fff;border-radius:6px;padding:3px 0;width:100%;}
+  .who.ellie span{background:var(--ellie);}
+  .who.carli span{background:var(--carli);}
+  .who.fam span{background:var(--leaf);}
+  .who.logi span{background:#8a7a5e;}
+  .ev .body{flex:1;}
+  .ev .body .t{font-weight:600;font-size:14.5px;line-height:1.25;}
+  .ev .body .time{font-size:12px;color:#7a6a52;margin-top:1px;}
+  .ev .del{position:absolute;top:8px;right:9px;border:none;background:none;color:#b8a890;cursor:pointer;font-size:15px;line-height:1;opacity:.5;}
+  .ev .del:hover{opacity:1;color:var(--sun-deep);}
+  .empty{font-size:13.5px;color:#9a8a70;font-style:italic;padding:14px 4px;text-align:center;}
+  .addrow{display:flex;gap:7px;margin-top:13px;}
+  .addrow input,.addrow select{font-family:inherit;font-size:13px;border:1.5px solid var(--line);background:var(--paper);
+    border-radius:10px;padding:9px 10px;}
+  .addrow .ti{flex:1;min-width:0;}
+  .addrow .tm{width:74px;}
+  .addrow .ws{width:84px;}
+  .addrow .add{background:var(--sun);border:none;color:#fff;font-weight:700;border-radius:10px;width:42px;cursor:pointer;font-size:20px;}
+  .addrow .add:active{transform:scale(.92);}
+
+  /* travel banner */
+  .travel{background:linear-gradient(100deg,var(--sky),var(--sky-deep));color:#fff;border-radius:12px;
+    padding:10px 14px;font-weight:600;font-size:14px;margin-bottom:12px;display:flex;align-items:center;gap:9px;}
+  .travel .ic{font-size:18px;}
+
+  /* ---------- kid checklists ---------- */
+  .kids{display:flex;flex-direction:column;gap:18px;}
+  .kidcard{border-radius:16px;padding:16px 16px 18px;border:1.5px solid var(--line);background:var(--paper);}
+  .kidcard.ellie{border-top:6px solid var(--ellie);}
+  .kidcard.carli{border-top:6px solid var(--carli);}
+  .kidhead{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:3px;}
+  .kidhead .nm{font-family:'Fraunces';font-weight:900;font-size:22px;}
+  .kidhead .nm.ellie{color:var(--ellie);}
+  .kidhead .nm.carli{color:var(--carli);}
+  .kidhead .streak{font-size:11.5px;font-weight:700;color:#7a6a52;}
+  .kidhead .streak b{color:var(--sun-deep);font-size:14px;}
+  .grade{font-size:11px;color:#9a8a70;letter-spacing:.06em;text-transform:uppercase;margin-bottom:13px;}
+
+  /* phone gate banner */
+  .phone{display:flex;align-items:center;gap:8px;border-radius:11px;padding:9px 12px;margin:10px 0 14px;
+    background:#ece1d0;border:1.5px dashed #c3b39a;font-size:13px;}
+  .phone.on{background:rgba(95,122,58,.14);border:1.5px solid var(--leaf);border-style:solid;}
+  .phone .lock{font-size:16px;flex:none;}
+  .phone .ptxt{font-weight:700;}
+  .phone.on .ptxt{color:var(--leaf);}
+  .phone .pcount{margin-left:auto;font-size:11px;color:#7a6a52;font-weight:600;text-align:right;}
+
+  /* Idea Lab weekly badge */
+  .labbadge{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;border-radius:10px;
+    padding:7px 11px;margin-bottom:6px;}
+  .labbadge span{font-size:14px;}
+  .lab-todo{background:rgba(166,64,107,.10);color:#8a3458;border:1px solid rgba(166,64,107,.25);}
+  .lab-done{background:rgba(95,122,58,.14);color:var(--leaf);border:1px solid var(--leaf);}
+  .lab-flag{background:#f6e4c4;color:#a05a14;border:1px solid #d89a3a;animation:nudge 2s ease-in-out infinite;}
+  @keyframes nudge{0%,100%{transform:translateX(0);}5%,15%{transform:translateX(-2px);}10%,20%{transform:translateX(2px);}25%{transform:translateX(0);}}
+
+  .tier-lbl{font-family:'Fraunces';font-weight:600;font-size:15px;margin:14px 0 4px;display:flex;align-items:center;gap:8px;}
+  .tier-lbl .tier-note{font-family:'Spline Sans';font-size:11px;font-weight:700;color:var(--sun-deep);
+    background:rgba(232,133,43,.14);border-radius:999px;padding:2px 9px;}
+  .tier-note{margin-left:auto;}
+  .optcat{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#a8967a;margin:12px 0 2px;}
+  .optcat:first-child{margin-top:4px;}
+  .task .tm{flex:none;font-size:11px;font-weight:600;color:#a8967a;margin-left:8px;}
+  .task.opt .ai{margin-left:auto;}
+  .task.opt .ai + .tm{margin-left:8px;}
+  .task.capped{opacity:.4;cursor:default;}
+  .task.capped .box{border-style:dashed;}
+  .task{display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid var(--line);cursor:pointer;}
+  .task:last-of-type{border-bottom:none;}
+  .box{flex:none;width:26px;height:26px;border-radius:8px;border:2px solid #c3b39a;background:var(--paper2);
+    display:flex;align-items:center;justify-content:center;transition:all .14s;font-size:16px;color:#fff;}
+  .task.done .box{background:var(--good);border-color:var(--good);}
+  .task .lbl{font-size:15px;font-weight:500;transition:.14s;}
+  .task.done .lbl{text-decoration:line-through;color:#a89878;}
+  .task .ai{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--sky-deep);background:rgba(59,122,140,.12);
+    padding:2px 7px;border-radius:6px;margin-left:auto;flex:none;}
+  .alldone{margin-top:12px;text-align:center;font-family:'Fraunces';font-style:italic;font-size:15px;color:var(--leaf);opacity:0;transition:.3s;height:0;}
+  .alldone.show{opacity:1;height:auto;}
+
+  /* ---------- thinking log ---------- */
+  .lab{margin-top:22px;}
+  .lab .card{background:linear-gradient(160deg,#fbf4e8,#efe3cf);}
+  .week-pick{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+  .week-pick button{font-family:inherit;font-size:12px;font-weight:600;border:1.5px solid var(--line);background:var(--paper);
+    color:#7a6a52;border-radius:999px;padding:6px 13px;cursor:pointer;}
+  .week-pick button.on{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+  .logtabs{display:flex;gap:8px;margin-bottom:14px;}
+  .logtabs button{flex:1;font-family:'Fraunces';font-weight:600;font-size:16px;border:1.5px solid var(--line);
+    background:var(--paper);border-radius:12px;padding:9px;cursor:pointer;}
+  .logtabs button.on.ellie{background:var(--ellie);color:#fff;border-color:var(--ellie);}
+  .logtabs button.on.carli{background:var(--carli);color:#fff;border-color:var(--carli);}
+  .qblock{margin-bottom:15px;}
+  .qblock label{display:block;font-family:'Fraunces';font-weight:600;font-size:15px;margin-bottom:6px;line-height:1.25;}
+  .qblock .hint{font-weight:400;font-style:italic;color:#9a8a70;font-size:13px;font-family:'Spline Sans';}
+  .qblock textarea{width:100%;font-family:inherit;font-size:14.5px;line-height:1.5;border:1.5px solid var(--line);
+    background:var(--paper);border-radius:12px;padding:11px 13px;resize:vertical;min-height:62px;color:var(--ink);}
+  .qblock textarea:focus{outline:none;border-color:var(--sky);}
+  .savebar{display:flex;align-items:center;gap:12px;margin-top:6px;}
+  .savebtn{background:var(--sun);color:#fff;border:none;font-family:inherit;font-weight:700;font-size:15px;
+    padding:11px 26px;border-radius:12px;cursor:pointer;}
+  .savebtn:active{transform:scale(.97);}
+  .saved-note{font-size:13px;color:var(--leaf);font-weight:600;opacity:0;transition:.3s;}
+  .saved-note.show{opacity:1;}
+  .prev{font-size:12px;color:#9a8a70;margin-top:10px;}
+
+  /* tab bar */
+  .tabbar{display:flex;align-items:center;gap:8px;margin:8px 0 22px;flex-wrap:wrap;}
+  .tab{font-family:'Fraunces';font-weight:600;font-size:19px;border:1.5px solid var(--line);background:var(--paper2);
+    color:#7a6a52;border-radius:14px;padding:10px 22px;cursor:pointer;transition:.14s;}
+  .tab:active{transform:scale(.97);}
+  .tab.on.ellie{background:var(--ellie);color:#fff;border-color:var(--ellie);}
+  .tab.on.carli{background:var(--carli);color:#fff;border-color:var(--carli);}
+  .tab.on.fam{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+  .syncdot{margin-left:auto;display:flex;align-items:center;gap:7px;font-size:11px;font-weight:600;
+    color:#7a6a52;letter-spacing:.04em;--dot:#5f7a3a;}
+  .syncdot .d{width:9px;height:9px;border-radius:50%;background:var(--dot);flex:none;}
+  .syncdot.spin .d{animation:pulse 1s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+  .panel{display:none;}
+  .panel.on{display:block;animation:fade .2s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+  .panel .card + .card{margin-top:18px;}
+  .lab-card{background:linear-gradient(160deg,#fbf4e8,#efe3cf);}
+  /* in single-kid view the inner kidcard needs no extra border treatment */
+  .onekid .kidcard{border:none;box-shadow:none;background:transparent;padding:0;}
+  .onekid .kidcard.ellie,.onekid .kidcard.carli{border-top:none;}
+
+  .prestart{text-align:center;padding:30px 16px;}
+  .prestart .ic{font-size:40px;margin-bottom:10px;}
+  .prestart .t{font-family:'Fraunces';font-weight:600;font-size:21px;}
+  .prestart .s{font-size:13.5px;color:#7a6a52;margin-top:6px;line-height:1.4;}
+
+  /* history */
+  .hrow{display:flex;gap:14px;align-items:flex-start;padding:11px 4px;border-bottom:1px solid var(--line);}
+  .hrow:last-child{border-bottom:none;}
+  .hrow.today{background:rgba(232,133,43,.07);border-radius:10px;padding-left:10px;padding-right:10px;}
+  .hdate{flex:none;width:56px;text-align:center;line-height:1.05;}
+  .hdate b{font-family:'Fraunces';font-size:16px;display:block;}
+  .hdate span{font-size:11px;color:#9a8a70;}
+  .hkids{flex:1;display:flex;flex-direction:column;gap:7px;}
+  .hk{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+  .hkn{font-weight:700;font-size:13px;width:46px;flex:none;}
+  .hk.ellie .hkn{color:var(--ellie);}
+  .hk.carli .hkn{color:var(--carli);}
+  .chip{font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;}
+  .chip.hit{background:rgba(95,122,58,.16);color:var(--leaf);}
+  .chip.miss{background:#e6dcca;color:#9a8a70;}
+  .chip.full{background:var(--leaf);color:#fff;}
+
+  footer{text-align:center;margin-top:34px;font-size:11px;color:#a89878;letter-spacing:.08em;}
+  .resetrow{text-align:center;margin-top:16px;}
+  .resetrow button{background:none;border:1px solid var(--line);color:#b8a890;font-size:10.5px;letter-spacing:.1em;
+    text-transform:uppercase;padding:5px 12px;border-radius:999px;cursor:pointer;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="kick">Cedar Grove &middot; Summer 2026</div>
+      <h1>The Summer <em>Hub</em></h1>
+    </div>
+    <div class="today-pill">
+      <div class="dow" id="pillDow">—</div>
+      <div class="dt" id="pillDate">—</div>
+    </div>
+  </header>
+
+  <!-- tab bar -->
+  <nav class="tabbar" id="tabbar">
+    <button class="tab ellie on" data-tab="ellie">Ellie</button>
+    <button class="tab carli" data-tab="carli">Carli</button>
+    <button class="tab fam" data-tab="fam">Family</button>
+    <div class="syncdot" id="syncDot" title="Sync status"><span class="d"></span><span class="st">…</span></div>
+  </nav>
+
+  <!-- ===== KID PANELS ===== -->
+  <section class="panel on" id="panel-ellie">
+    <div class="card kidpanelcard">
+      <h2 class="ellie">☀️ Ellie's Day</h2>
+      <div class="sub">Do your <b>must-dos</b>, then <b>pick 3</b>. When it's all checked, the phone unlocks — you choose which 3 and when.</div>
+      <div class="onekid" id="kid-ellie"></div>
+    </div>
+    <div class="card lab-card">
+      <h2>💡 Idea Lab <span class="tag" style="background:var(--berry)">Weekly</span></h2>
+      <div class="sub">Once a week: find a problem, use AI to help, and notice where it's wrong. Not a perfect app — a sharper brain.</div>
+      <div class="week-pick" id="weekPick-ellie"></div>
+      <div id="logForm-ellie"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-carli">
+    <div class="card kidpanelcard">
+      <h2 class="carli">☀️ Carli's Day</h2>
+      <div class="sub">Do your <b>must-dos</b>, then <b>pick 3</b>. When it's all checked, the phone unlocks — you choose which 3 and when.</div>
+      <div class="onekid" id="kid-carli"></div>
+    </div>
+    <div class="card lab-card">
+      <h2>💡 Idea Lab <span class="tag" style="background:var(--berry)">Weekly</span></h2>
+      <div class="sub">Once a week: find a problem, use AI to help, and notice where it's wrong. Not a perfect app — a sharper brain.</div>
+      <div class="week-pick" id="weekPick-carli"></div>
+      <div id="logForm-carli"></div>
+    </div>
+  </section>
+
+  <!-- ===== FAMILY PANEL ===== -->
+  <section class="panel" id="panel-fam">
+    <div class="card">
+      <h2>📅 The Day</h2>
+      <div class="sub">Who's where, who's driving. Tap × to remove, use the row below to add.</div>
+      <div class="daynav">
+        <button id="prevDay">‹</button>
+        <div class="dlabel">
+          <div class="big" id="navBig">—</div>
+          <div class="small" id="navSmall">—</div>
+        </div>
+        <button id="nextDay">›</button>
+      </div>
+      <button class="jump" id="jumpToday">Jump to today</button>
+      <div id="travelBanner"></div>
+      <div class="events" id="events"></div>
+      <div class="addrow">
+        <input class="ti" id="addText" placeholder="Add something…">
+        <input class="tm" id="addTime" placeholder="time">
+        <select class="ws" id="addWho">
+          <option value="fam">Family</option>
+          <option value="ellie">Ellie</option>
+          <option value="carli">Carli</option>
+          <option value="logi">Logistics</option>
+        </select>
+        <button class="add" id="addBtn">+</button>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:18px">
+      <h2>📖 The Track Record <span class="tag" style="background:var(--sky)">History</span></h2>
+      <div class="sub">What actually got done, day by day. Green = done, grey = missed. For looking back together — not a scoreboard.</div>
+      <div id="history"></div>
+    </div>
+
+    <div class="resetrow"><button id="hardReset">Reset everything</button></div>
+  </section>
+
+  <footer>Shared across the family &middot; Syncs on every device</footer>
+</div>
+
+<script>
+/* ============ DATA: summer schedule from the family doc ============ */
+/* who: ellie | carli | fam | logi   */
+const SCHEDULE = {
+  "2026-06-17":[{w:"ellie",t:"8th grade dance"}],
+  "2026-06-18":[{w:"ellie",t:"Ellie graduates!"}],
+  "2026-06-19":[{w:"fam",t:"Last day of school"}],
+  "2026-06-22":[{w:"carli",t:"CG Music camp",tm:"9–1"},{w:"logi",t:"Mom pick up"},{w:"ellie",t:"CG Softball",tm:"5–7"},{w:"fam",t:"Freedom",tm:"7p"}],
+  "2026-06-23":[{w:"carli",t:"CG Music camp",tm:"9–1"},{w:"logi",t:"Mom takes Carli to camp + 1pm pickup"},{w:"fam",t:"Amy retreat all day",tm:"8–8"},{w:"logi",t:"Ben home earlier?"}],
+  "2026-06-24":[{w:"carli",t:"CG Music camp",tm:"9–1"},{w:"logi",t:"Ben pick up at 1"}],
+  "2026-06-25":[{w:"carli",t:"CG Music camp",tm:"9–1"},{w:"ellie",t:"Orthodontist",tm:"10a"},{w:"carli",t:"Therapy",tm:"3–5"},{w:"logi",t:"Amy pickup / work remote"}],
+  "2026-06-26":[{w:"carli",t:"CG Music camp",tm:"9–1"}],
+  "2026-06-28":[{w:"fam",t:"Mom & Dad away",travel:1}],
+  "2026-06-29":[{w:"fam",t:"Amy colonoscopy"},{w:"carli",t:"PV Camp",tm:"8:30–1"},{w:"logi",t:"Ben home for Amy + camp drop/pick"},{w:"logi",t:"Jes babysit?"},{w:"ellie",t:"CG Softball",tm:"5–7"}],
+  "2026-06-30":[{w:"carli",t:"PV Camp",tm:"8:30–1"},{w:"logi",t:"Amy pickup"},{w:"fam",t:"Kids home 1–4"}],
+  "2026-07-01":[{w:"carli",t:"PV Camp",tm:"8:30–1"},{w:"logi",t:"Ben pickup"}],
+  "2026-07-02":[{w:"carli",t:"PV Camp",tm:"8:30–1"},{w:"carli",t:"Therapy",tm:"3–5"},{w:"logi",t:"Amy pickup / remote"},{w:"ellie",t:"CG Softball",tm:"5–7"}],
+  "2026-07-03":[{w:"fam",t:"Wildwood",travel:1}],
+  "2026-07-06":[{w:"ellie",t:"Mount Softball",tm:"9–3"},{w:"carli",t:"PV Camp",tm:"8:30–1"},{w:"carli",t:"WO Intensive",tm:"2–4"},{w:"logi",t:"Amy pickup Carli → PT"},{w:"logi",t:"Ben pickup Ellie"}],
+  "2026-07-07":[{w:"ellie",t:"Mount Softball",tm:"9–3"},{w:"carli",t:"PV Camp",tm:"8:30–1"},{w:"carli",t:"WO Intensive",tm:"2–4"},{w:"logi",t:"Mom pickup Carli → PT"},{w:"logi",t:"Amy/Dad pickup Ellie if needed"}],
+  "2026-07-08":[{w:"ellie",t:"Mount Softball",tm:"9–3"},{w:"carli",t:"PV Camp",tm:"8:30–1"},{w:"carli",t:"WO Intensive",tm:"2–4"},{w:"logi",t:"Ben pickup Carli → PT"},{w:"logi",t:"Amy pickup Ellie if needed"}],
+  "2026-07-09":[{w:"ellie",t:"Mount Softball",tm:"9–3"},{w:"carli",t:"PV Camp",tm:"8:30–1"},{w:"carli",t:"WO Intensive",tm:"1:30–3:30"},{w:"logi",t:"Amy pickup Carli"},{w:"logi",t:"Mom/Dad pickup Ellie"}],
+  "2026-07-10":[{w:"ellie",t:"Mount Softball",tm:"9–3"},{w:"fam",t:"To Hershey",travel:1}],
+  "2026-07-11":[{w:"fam",t:"Hershey",travel:1}],
+  "2026-07-12":[{w:"fam",t:"Hershey",travel:1}],
+  "2026-07-13":[{w:"ellie",t:"Depaul Softball",tm:"9–12"},{w:"carli",t:"PV Camp",tm:"8:30–1"},{w:"carli",t:"WO Intensive",tm:"2–4"},{w:"logi",t:"Mom pickup Ellie/Carli + Carli PT"},{w:"ellie",t:"CG Softball",tm:"5–7"}],
+  "2026-07-14":[{w:"ellie",t:"Depaul Softball",tm:"9–12"},{w:"carli",t:"PV Camp",tm:"8:30–1"},{w:"carli",t:"WO Intensive",tm:"2–4"},{w:"logi",t:"Mom pickup Ellie/Carli + Carli PT"}],
+  "2026-07-15":[{w:"ellie",t:"Depaul Softball",tm:"9–12"},{w:"carli",t:"PV Camp",tm:"8:30–1"},{w:"carli",t:"WO Intensive",tm:"2–4"},{w:"logi",t:"Ben pickup Ellie/Carli + Carli PT"}],
+  "2026-07-16":[{w:"ellie",t:"Depaul Softball",tm:"9–12"},{w:"carli",t:"PV Camp",tm:"8:30–1"},{w:"carli",t:"WO Intensive",tm:"1:30–3:30"},{w:"logi",t:"Amy pickup + PT"},{w:"ellie",t:"CG Softball",tm:"5–7"}],
+  "2026-07-17":[{w:"fam",t:"Ellie & Carli dentist",tm:"12:30"}],
+  "2026-07-18":[{w:"fam",t:"Pink Panther tourney",travel:1}],
+  "2026-07-19":[{w:"fam",t:"Pink Panther tourney",travel:1}],
+  "2026-07-20":[{w:"carli",t:"PV Camp",tm:"8:30–1"},{w:"carli",t:"WO Intensive",tm:"2–4"},{w:"logi",t:"Amy pickup"},{w:"logi",t:"Jes babysit"}],
+  "2026-07-21":[{w:"carli",t:"PV Camp",tm:"8:30–1"},{w:"carli",t:"WO Intensive",tm:"2–4"},{w:"logi",t:"Mom pickup + Carli PT"}],
+  "2026-07-22":[{w:"carli",t:"PV Camp",tm:"8:30–1"},{w:"carli",t:"WO Intensive",tm:"2–4"},{w:"logi",t:"Ben pickup Carli + PT"}],
+  "2026-07-23":[{w:"carli",t:"PV Camp",tm:"8:30–1"},{w:"carli",t:"WO Intensive",tm:"1:30–3:30"},{w:"logi",t:"Ben pickup Carli + PT"}],
+  "2026-07-26":[{w:"fam",t:"Mom & Dad away this week",travel:1}],
+  "2026-07-27":[{w:"carli",t:"WO Intensive",tm:"2–4"},{w:"logi",t:"Amy cover / no camps"},{w:"logi",t:"Jes babysit"}],
+  "2026-07-28":[{w:"carli",t:"WO Intensive",tm:"2–4"},{w:"logi",t:"Ben cover / no camps"}],
+  "2026-07-29":[{w:"carli",t:"WO Intensive",tm:"2–4"},{w:"logi",t:"Ben cover / no camps"}],
+  "2026-07-30":[{w:"carli",t:"WO Intensive",tm:"1:30–3:30"},{w:"logi",t:"Amy cover / no camps"}],
+  "2026-07-31":[{w:"fam",t:"Kids eye doctor",tm:"8:45"}],
+  "2026-08-01":[{w:"fam",t:"Vacation",travel:1}],
+  "2026-08-02":[{w:"fam",t:"Vacation",travel:1}],
+  "2026-08-03":[{w:"fam",t:"Vacation",travel:1}],
+  "2026-08-04":[{w:"fam",t:"Vacation",travel:1}],
+  "2026-08-05":[{w:"fam",t:"Vacation",travel:1}],
+  "2026-08-06":[{w:"fam",t:"Vacation",travel:1}],
+  "2026-08-07":[{w:"fam",t:"Vacation",travel:1}],
+  "2026-08-08":[{w:"fam",t:"Jackson tourney",travel:1}],
+  "2026-08-10":[{w:"carli",t:"Kennedy camp",tm:"9–2"},{w:"logi",t:"or Kristen camp 11–2"}],
+  "2026-08-11":[{w:"carli",t:"Kennedy camp",tm:"9–2"}],
+  "2026-08-12":[{w:"carli",t:"Kennedy camp",tm:"9–2"}],
+  "2026-08-13":[{w:"carli",t:"Kennedy camp",tm:"9–2"}],
+  "2026-08-14":[{w:"carli",t:"Kennedy camp",tm:"9–2"}],
+  "2026-08-17":[{w:"ellie",t:"Pitching Factory",tm:"9–1"},{w:"carli",t:"Intro to the Arts workshop",tm:"9–12"}],
+  "2026-08-18":[{w:"ellie",t:"Pitching Factory",tm:"9–1"},{w:"carli",t:"Arts workshop",tm:"9–12"}],
+  "2026-08-19":[{w:"ellie",t:"Pitching Factory",tm:"9–1"},{w:"carli",t:"Arts workshop",tm:"9–12"}],
+  "2026-08-20":[{w:"ellie",t:"Pitching Factory",tm:"9–1"},{w:"carli",t:"Arts workshop",tm:"9–12"}],
+  "2026-08-21":[{w:"carli",t:"Arts workshop",tm:"9–12"}],
+  "2026-08-24":[{w:"logi",t:"Jes babysit"}],
+  "2026-08-26":[{w:"fam",t:"Bruno Mars",travel:1}],
+  "2026-09-01":[{w:"carli",t:"Carli Delaware"}],
+  "2026-09-08":[{w:"fam",t:"First day of school"}]
+};
+
+/* daily plan = required base (must do) + pick-3 from the options menu.
+   All of it together gates phone/screen time. */
+const PICK_COUNT = 3;
+const REQUIRED = {
+  ellie:[
+    {id:"room",lbl:"Room clean"},
+    {id:"laundry",lbl:"My laundry"},
+    {id:"dishes",lbl:"Empty dishwasher"}
+  ],
+  carli:[
+    {id:"room",lbl:"Room clean"}
+  ]
+};
+/* per-kid options — most categories shared, but Body differs:
+   Carli's movement is PT-driven, not softball. Edit the PT labels to match
+   exactly what her physical therapist prescribed. */
+const _MIND = [
+  {id:"khanmigo",lbl:"20 min Khanmigo — math or language arts",ai:1,t:"20m"},
+  {id:"read",lbl:"Read a real book (paper / Kindle)",t:"20m"},
+  {id:"idealab",lbl:"Idea Lab — work on your summer project",ai:1,t:"15m"},
+  {id:"teach",lbl:"Learn one new thing, explain it at dinner",ai:1,t:"15m"},
+  {id:"duo",lbl:"Practice a language (Duolingo)",t:"15m"}
+];
+const _HOME = [
+  {id:"cook",lbl:"Cook or help prep part of dinner",t:"20m"},
+  {id:"help",lbl:"Help someone in the house — unprompted",t:"10m"},
+  {id:"tidy",lbl:"Tidy a shared space (not your room)",t:"10m"}
+];
+const _MAKE = [
+  {id:"create",lbl:"Draw, write, build, or practice music",t:"20m"},
+  {id:"plan",lbl:"Plan / research something you're excited about",ai:1,t:"15m"}
+];
+const OPTIONS = {
+  ellie:[
+    {cat:"Mind", items:_MIND},
+    {cat:"Body", items:[
+      {id:"softball",lbl:"Softball skill work — throw, soft-toss, footwork",t:"20m"},
+      {id:"outside",lbl:"20 min outside, no phone",t:"20m"},
+      {id:"workout",lbl:"Workout or stretch routine",t:"15m"}
+    ]},
+    {cat:"Home & self", items:_HOME},
+    {cat:"Make / create", items:_MAKE}
+  ],
+  carli:[
+    {cat:"Mind", items:_MIND},
+    {cat:"Body — PT & movement", items:[
+      {id:"pthw",lbl:"PT homework (your prescribed exercises)",t:"20m"},
+      {id:"stretch",lbl:"Stretching routine",t:"15m"},
+      {id:"canes",lbl:"Canes work",t:"15m"},
+      {id:"outside",lbl:"20 min outside, no phone",t:"20m"}
+    ]},
+    {cat:"Home & self", items:_HOME},
+    {cat:"Make / create", items:_MAKE}
+  ]
+};
+const KID_META = {
+  ellie:{name:"Ellie",grade:"Freshman year ahead",cls:"ellie"},
+  carli:{name:"Carli",grade:"6th grade ahead",cls:"carli"}
+};
+const WHO_LABEL = {ellie:"Ellie",carli:"Carli",fam:"Fam",logi:"Drive"};
+
+/* Idea Lab prompts */
+const LAB_Q = [
+  {id:"problem",q:"What problem are you poking at?",h:"Something that bugs you or someone you know. Small is fine."},
+  {id:"who",q:"Who has this problem — and how do you know?",h:"Did you ask them, or are you guessing?"},
+  {id:"ai",q:"What did you ask the AI to help with, and what did it get WRONG the first time?",h:"The wrong part is the interesting part."},
+  {id:"next",q:"What would you change next time?",h:"About your idea, or about how you asked."}
+];
+
+/* ============ STATE / STORAGE (synced) ============ */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxaFEPiaFdq3twP4bV6BD1yTovng7y0_O9HgXvx1n8S5I6nvflufn8xHbbVmVVLnHkusg/exec";
+const LS_KEY = "summerHub_v1"; // local cache / offline fallback
+
+let DB = loadLocal();          // start from cache so UI is instant
+let syncState = "loading";     // loading | synced | syncing | offline
+let pendingWrite = false;      // a write is queued
+let writeTimer = null;
+
+function blank(){ return {checks:{},log:{},sched:{},dels:{}}; }
+function loadLocal(){
+  try{ return Object.assign(blank(), JSON.parse(localStorage.getItem(LS_KEY))||{}); }
+  catch(e){ return blank(); }
+}
+function cacheLocal(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(DB)); }catch(e){} }
+
+function setSync(s){ syncState=s; paintSyncDot(); }
+function paintSyncDot(){
+  const el=document.getElementById("syncDot"); if(!el)return;
+  const map={loading:["#c9a14a","Loading…"],synced:["#5f7a3a","Synced"],
+             syncing:["#3b7a8c","Saving…"],offline:["#b5642a","Offline — saved here"]};
+  const [c,t]=map[syncState]||map.synced;
+  el.style.setProperty("--dot",c);
+  el.querySelector(".st").textContent=t;
+  el.classList.toggle("spin", syncState==="syncing"||syncState==="loading");
+}
+
+/* pull full state from backend on load */
+async function pullState(){
+  setSync("loading");
+  try{
+    const r=await fetch(SCRIPT_URL,{method:"GET"});
+    const j=await r.json();
+    if(j&&j.ok&&j.state){
+      DB=Object.assign(blank(), j.state);
+      cacheLocal();
+      setSync("synced");
+      renderAll();
+      return;
+    }
+    throw new Error("bad payload");
+  }catch(e){
+    // fall back to local cache; we're offline or blocked
+    setSync("offline");
+    renderAll();
+  }
+}
+
+/* push full state to backend (debounced); always cache locally first */
+function save(){
+  cacheLocal();                 // never lose a tap
+  pendingWrite=true;
+  clearTimeout(writeTimer);
+  writeTimer=setTimeout(flushWrite, 600); // debounce rapid taps into one write
+}
+async function flushWrite(){
+  if(!pendingWrite) return;
+  pendingWrite=false;
+  setSync("syncing");
+  try{
+    const r=await fetch(SCRIPT_URL,{
+      method:"POST",
+      // text/plain keeps it a "simple" request -> no CORS preflight Apps Script can't answer
+      headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify({mode:"replace", state:DB})
+    });
+    const j=await r.json();
+    if(j&&j.ok){ setSync("synced"); }
+    else { throw new Error("write failed"); }
+  }catch(e){
+    setSync("offline");
+    // retry shortly; tap is already cached locally
+    clearTimeout(writeTimer);
+    writeTimer=setTimeout(()=>{ pendingWrite=true; flushWrite(); }, 4000);
+  }
+}
+
+/* periodic refresh so other devices' changes show up */
+function startPolling(){
+  setInterval(async()=>{
+    if(syncState==="syncing"||pendingWrite) return; // don't fight our own write
+    try{
+      const r=await fetch(SCRIPT_URL,{method:"GET"});
+      const j=await r.json();
+      if(j&&j.ok&&j.state){
+        const incoming=JSON.stringify(j.state);
+        if(incoming!==JSON.stringify(DB)){
+          DB=Object.assign(blank(), j.state);
+          cacheLocal();
+          renderAll();
+        }
+        if(syncState==="offline") setSync("synced");
+      }
+    }catch(e){ /* stay on whatever state we had */ }
+  }, 15000); // every 15s
+}
+
+/* ============ DATES ============ */
+const SUMMER_START = new Date(2026,5,15);
+const SUMMER_END   = new Date(2026,8,8);
+const PROGRAM_START = new Date(2026,5,19); // kept for reference; gate disabled below
+function programActive(){ return true; } // Daily Deal active regardless of date
+function ymd(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function parseYmd(s){const [y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d);}
+const DOW=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+let viewDate = new Date();
+(function clampView(){
+  if(viewDate<SUMMER_START)viewDate=new Date(SUMMER_START);
+  if(viewDate>SUMMER_END)viewDate=new Date(SUMMER_END);
+})();
+
+/* events for a day = base schedule (minus deletes) + user adds */
+function eventsFor(key){
+  const base=(SCHEDULE[key]||[]).map((e,i)=>({...e,_src:"base",_i:i}));
+  const dels=DB.dels[key]||[];
+  const kept=base.filter(e=>!dels.includes(e._i));
+  const adds=(DB.sched[key]||[]).map((e,i)=>({...e,_src:"add",_i:i}));
+  return kept.concat(adds);
+}
+
+/* ============ RENDER: schedule ============ */
+function renderDay(){
+  const key=ymd(viewDate);
+  document.getElementById("navBig").textContent=DOW[viewDate.getDay()];
+  document.getElementById("navSmall").textContent=MON[viewDate.getMonth()]+" "+viewDate.getDate();
+
+  const evs=eventsFor(key);
+  const tb=document.getElementById("travelBanner");
+  const travelEv=evs.find(e=>e.travel);
+  tb.innerHTML = travelEv ? `<div class="travel"><span class="ic">✈️</span>${travelEv.t}</div>` : "";
+
+  const box=document.getElementById("events");
+  const show=evs.filter(e=>!e.travel);
+  if(show.length===0 && !travelEv){
+    box.innerHTML=`<div class="empty">Nothing scheduled — a rare open day. 🌤️</div>`;
+    return;
+  }
+  box.innerHTML=show.map(e=>{
+    const w=e.w||"fam";
+    return `<div class="ev">
+      <div class="who ${w}"><span>${WHO_LABEL[w]||"Fam"}</span></div>
+      <div class="body"><div class="t">${esc(e.t)}</div>${e.tm?`<div class="time">${esc(e.tm)}</div>`:""}</div>
+      <button class="del" data-src="${e._src}" data-i="${e._i}" title="Remove">×</button>
+    </div>`;
+  }).join("");
+
+  box.querySelectorAll(".del").forEach(b=>b.onclick=()=>{
+    const i=+b.dataset.i;
+    if(b.dataset.src==="base"){
+      DB.dels[key]=DB.dels[key]||[]; if(!DB.dels[key].includes(i))DB.dels[key].push(i);
+    }else{
+      DB.sched[key].splice(i,1);
+    }
+    save();renderDay();
+  });
+}
+
+function addEvent(){
+  const t=document.getElementById("addText").value.trim();
+  if(!t)return;
+  const tm=document.getElementById("addTime").value.trim();
+  const w=document.getElementById("addWho").value;
+  const key=ymd(viewDate);
+  DB.sched[key]=DB.sched[key]||[];
+  DB.sched[key].push({w,t,tm});
+  document.getElementById("addText").value="";
+  document.getElementById("addTime").value="";
+  save();renderDay();
+}
+
+/* ============ RENDER: checklists ============ */
+/* a day is "complete" (phone unlocked) when:
+   - every REQUIRED item is checked, AND
+   - at least PICK_COUNT options are checked  */
+function dayComplete(checks,kid){
+  const req=REQUIRED[kid].every(t=>checks[t.id]);
+  const picks=OPTIONS[kid].reduce((n,c)=>n+c.items.filter(o=>checks[o.id]).length,0);
+  return req && picks>=PICK_COUNT;
+}
+function renderKids(){
+  ["ellie","carli"].forEach(renderOneKid);
+}
+function renderOneKid(kid){
+  const host=document.getElementById("kid-"+kid);
+  if(!host) return;
+  if(!programActive()){
+    const d=PROGRAM_START;
+    host.innerHTML=`<div class="prestart">
+      <div class="ic">🎒</div>
+      <div class="t">Summer starts ${DOW[d.getDay()]}, ${MON[d.getMonth()]} ${d.getDate()}</div>
+      <div class="s">Last day of school first. The daily deal goes live when you're free.</div>
+    </div>`;
+    return;
+  }
+  const key=ymd(new Date()); // always the real today
+  host.innerHTML="";
+  const meta=KID_META[kid];
+  const checks=(DB.checks[key]&&DB.checks[key][kid])||{};
+  const picksDone=OPTIONS[kid].reduce((n,c)=>n+c.items.filter(o=>checks[o.id]).length,0);
+  const reqDone=REQUIRED[kid].every(t=>checks[t.id]);
+  const complete=reqDone && picksDone>=PICK_COUNT;
+  const streak=calcStreak(kid);
+  const lab=labWeekStatus(kid);
+  const labCls = lab.done ? "lab-done" : (lab.flag ? "lab-flag" : "lab-todo");
+  const labIcon = lab.done ? "✓" : (lab.flag ? "⚠️" : "💡");
+  const labMsg = lab.done ? "Idea Lab done this week"
+               : lab.flag ? `Idea Lab due — ${lab.filled}/${lab.total} filled`
+               : `Idea Lab this week — ${lab.filled}/${lab.total}`;
+
+  const card=document.createElement("div");
+  card.className="kidcard "+meta.cls;
+  card.innerHTML=`
+    <div class="kidhead">
+      <div class="nm ${meta.cls}">${meta.name}</div>
+      <div class="streak">🔥 <b>${streak}</b></div>
+    </div>
+    <div class="phone ${complete?'on':''}">
+      <span class="lock">${complete?'🔓':'🔒'}</span>
+      <span class="ptxt">${complete?'Phone unlocked — nice.':'Phone locked'}</span>
+      <span class="pcount">${picksDone}/${PICK_COUNT} picks${reqDone?' · must-dos ✓':''}</span>
+    </div>
+    <div class="labbadge ${labCls}"><span>${labIcon}</span> ${labMsg}</div>
+
+    <div class="tier-lbl">Must do</div>
+    <div class="reqs"></div>
+
+    <div class="tier-lbl">Pick ${PICK_COUNT} — your call <span class="tier-note">${picksDone}/${PICK_COUNT}</span></div>
+    <div class="opts"></div>`;
+
+  // required
+  const rw=card.querySelector(".reqs");
+  REQUIRED[kid].forEach(tk=>{
+    const done=!!checks[tk.id];
+    const row=document.createElement("div");
+    row.className="task req"+(done?" done":"");
+    row.innerHTML=`<div class="box">${done?"✓":""}</div><div class="lbl">${tk.lbl}</div>`;
+    row.onclick=()=>toggle(kid,tk.id);
+    rw.appendChild(row);
+  });
+
+  // options, grouped by category
+  const ow=card.querySelector(".opts");
+  OPTIONS[kid].forEach(group=>{
+    const h=document.createElement("div");
+    h.className="optcat";h.textContent=group.cat;
+    ow.appendChild(h);
+    group.items.forEach(o=>{
+      const done=!!checks[o.id];
+      const capped=!done && picksDone>=PICK_COUNT;
+      const row=document.createElement("div");
+      row.className="task opt"+(done?" done":"")+(capped?" capped":"");
+      row.innerHTML=`<div class="box">${done?"✓":""}</div>
+        <div class="lbl">${o.lbl}</div>
+        ${o.ai?'<div class="ai">AI</div>':''}
+        <div class="tm">${o.t}</div>`;
+      row.onclick=()=>{ if(capped)return; toggle(kid,o.id); };
+      ow.appendChild(row);
+    });
+  });
+
+  host.appendChild(card);
+}
+function toggle(kid,id){
+  const key=ymd(new Date());
+  DB.checks[key]=DB.checks[key]||{};
+  DB.checks[key][kid]=DB.checks[key][kid]||{};
+  DB.checks[key][kid][id]=!DB.checks[key][kid][id];
+  save();renderOneKid(kid);renderHistory();
+}
+function calcStreak(kid){
+  let s=0;const d=new Date();
+  for(let n=0;n<120;n++){
+    const k=ymd(d);
+    const c=(DB.checks[k]&&DB.checks[k][kid])||{};
+    if(dayComplete(c,kid))s++; else break;
+    d.setDate(d.getDate()-1);
+  }
+  return s;
+}
+/* Idea Lab weekly status for the CURRENT week.
+   done  = all 4 prompts filled for this week
+   flag  = not done AND it's Sat/Sun (week is closing) */
+function labWeekStatus(kid){
+  const wk=currentWeekId();
+  const entry=(DB.log[wk]&&DB.log[wk][kid])||{};
+  const filled=LAB_Q.filter(q=>entry[q.id]&&entry[q.id].trim().length>0).length;
+  const done=filled===LAB_Q.length;
+  const dow=new Date().getDay(); // 6=Sat, 0=Sun
+  const flag=!done && (dow===6 || dow===0);
+  return {done,flag,filled,total:LAB_Q.length};
+}
+
+/* ============ RENDER: history / track record ============ */
+function renderHistory(){
+  const host=document.getElementById("history");
+  if(!programActive()){
+    host.innerHTML=`<div class="empty">Starts ${MON[PROGRAM_START.getMonth()]} ${PROGRAM_START.getDate()}. Nothing to look back on yet. 🌱</div>`;
+    return;
+  }
+  const today=new Date(); today.setHours(0,0,0,0);
+  const floor = today < PROGRAM_START ? today : PROGRAM_START; // show today's data even before official start
+  const rows=[];
+  let d=new Date(today);
+  // walk backward from today to the floor, newest first
+  while(d>=floor){
+    const key=ymd(d);
+    const isToday=key===ymd(today);
+    let kidHtml="";
+    ["ellie","carli"].forEach(kid=>{
+      const c=(DB.checks[key]&&DB.checks[key][kid])||{};
+      const reqItems=REQUIRED[kid];
+      const reqDone=reqItems.filter(t=>c[t.id]).length;
+      const picks=OPTIONS[kid].reduce((n,g)=>n+g.items.filter(o=>c[o.id]).length,0);
+      const full=reqDone===reqItems.length && picks>=PICK_COUNT;
+      const reqCls=reqDone===reqItems.length?"hit":"miss";
+      const pickCls=picks>=PICK_COUNT?"hit":"miss";
+      kidHtml+=`<div class="hk ${kid}">
+        <span class="hkn">${KID_META[kid].name}</span>
+        <span class="chip ${reqCls}">must ${reqDone}/${reqItems.length}</span>
+        <span class="chip ${pickCls}">picks ${picks}/${PICK_COUNT}</span>
+        ${full?'<span class="chip full">✓ full</span>':''}
+      </div>`;
+    });
+    rows.push(`<div class="hrow${isToday?' today':''}">
+      <div class="hdate"><b>${DOW[d.getDay()].slice(0,3)}</b><span>${MON[d.getMonth()]} ${d.getDate()}</span></div>
+      <div class="hkids">${kidHtml}</div>
+    </div>`);
+    d.setDate(d.getDate()-1);
+  }
+  host.innerHTML = rows.length ? rows.join("") :
+    `<div class="empty">Nothing tracked yet.</div>`;
+}
+
+/* ============ RENDER: idea lab (per kid) ============ */
+const labWeekSel={ellie:null,carli:null}; // selected week per kid (null = current)
+function currentWeekId(){
+  const t=new Date(); const day=t.getDay();
+  const mon=new Date(t); mon.setDate(t.getDate()-((day+6)%7));
+  if(mon<SUMMER_START)return ymd(SUMMER_START_MON());
+  return ymd(mon);
+}
+function SUMMER_START_MON(){const d=new Date(SUMMER_START);d.setDate(d.getDate()-((d.getDay()+6)%7));return d;}
+function weekList(){
+  const out=[];let d=SUMMER_START_MON();
+  while(d<=SUMMER_END){out.push(ymd(d));d=new Date(d);d.setDate(d.getDate()+7);}
+  return out;
+}
+function renderLab(){
+  ["ellie","carli"].forEach(renderOneLab);
+}
+function renderOneLab(kid){
+  const wp=document.getElementById("weekPick-"+kid);
+  const f=document.getElementById("logForm-"+kid);
+  if(!wp||!f) return;
+  const sel = labWeekSel[kid] || currentWeekId();
+
+  wp.innerHTML=weekList().map(w=>{
+    const d=parseYmd(w);
+    return `<button class="${sel===w?'on':''}" data-w="${w}">Wk of ${MON[d.getMonth()]} ${d.getDate()}</button>`;
+  }).join("");
+  wp.querySelectorAll("button").forEach(b=>b.onclick=()=>{labWeekSel[kid]=b.dataset.w;renderOneLab(kid);});
+
+  const saved=(DB.log[sel]&&DB.log[sel][kid])||{};
+  f.innerHTML=LAB_Q.map(q=>`
+    <div class="qblock">
+      <label>${q.q}<br><span class="hint">${q.h}</span></label>
+      <textarea data-q="${q.id}" placeholder="…">${saved[q.id]?esc(saved[q.id]):""}</textarea>
+    </div>`).join("") +
+    `<div class="savebar"><button class="savebtn" data-kid="${kid}">Save entry</button>
+     <span class="saved-note">Saved ✓</span></div>`;
+  f.querySelector(".savebtn").onclick=(ev)=>{
+    DB.log[sel]=DB.log[sel]||{};
+    DB.log[sel][kid]={};
+    f.querySelectorAll("textarea").forEach(t=>{DB.log[sel][kid][t.dataset.q]=t.value.trim();});
+    DB.log[sel][kid]._ts=Date.now();
+    save();
+    renderOneKid(kid); // refresh the weekly badge live
+    const n=f.querySelector(".saved-note");n.classList.add("show");setTimeout(()=>n.classList.remove("show"),1800);
+  };
+}
+
+/* ============ misc ============ */
+function esc(s){return (s+"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function renderPill(){
+  const t=new Date();
+  document.getElementById("pillDow").textContent=DOW[t.getDay()];
+  document.getElementById("pillDate").textContent=MON[t.getMonth()]+" "+t.getDate()+", "+t.getFullYear();
+}
+/* render everything from current DB (used after a sync pull) */
+function renderAll(){ renderDay();renderKids();renderLab();renderHistory(); }
+
+/* ============ tabs ============ */
+function setTab(name){
+  document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("on",b.dataset.tab===name));
+  document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("on",p.id==="panel-"+name));
+  window.scrollTo(0,0);
+}
+
+/* ============ wire up ============ */
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
+document.getElementById("prevDay").onclick=()=>{viewDate.setDate(viewDate.getDate()-1);if(viewDate>=SUMMER_START)renderDay();else viewDate.setDate(viewDate.getDate()+1);};
+document.getElementById("nextDay").onclick=()=>{viewDate.setDate(viewDate.getDate()+1);if(viewDate<=SUMMER_END)renderDay();else viewDate.setDate(viewDate.getDate()-1);};
+document.getElementById("jumpToday").onclick=()=>{viewDate=new Date();renderDay();};
+document.getElementById("addBtn").onclick=addEvent;
+document.getElementById("addText").addEventListener("keydown",e=>{if(e.key==="Enter")addEvent();});
+document.getElementById("hardReset").onclick=()=>{
+  if(confirm("Erase all checkboxes, history, idea-lab entries and schedule edits for EVERYONE? The base schedule stays. This syncs to all devices.")){
+    DB=blank();save();renderAll();
+  }
+};
+
+/* initial paint from cache (instant), then pull fresh from backend, then poll */
+renderPill();
+renderAll();
+paintSyncDot();
+pullState().then(startPolling);
+
+</script>
+</body>
+</html>
