@@ -138,8 +138,37 @@
   .kidhead .nm{font-family:'Fraunces';font-weight:900;font-size:22px;}
   .kidhead .nm.ellie{color:var(--ellie);}
   .kidhead .nm.carli{color:var(--carli);}
-  .kidhead .streak{font-size:11.5px;font-weight:700;color:#7a6a52;}
-  .kidhead .streak b{color:var(--sun-deep);font-size:14px;}
+  .kidhead .streak{font-size:11.5px;font-weight:700;color:#7a6a52;display:flex;align-items:center;gap:8px;}
+  .kidhead .streak b{color:var(--sun-deep);font-size:18px;}
+  .kidhead .streak .best{font-size:10px;color:#a8967a;font-weight:600;letter-spacing:.04em;}
+
+  /* streak progress bar */
+  .streakbar{margin:10px 0 14px;}
+  .sb-track{height:10px;background:#e6dcca;border-radius:999px;overflow:hidden;}
+  .sb-fill{height:100%;background:linear-gradient(90deg,var(--sun),var(--berry));border-radius:999px;
+    transition:width .5s cubic-bezier(.4,1.3,.5,1);}
+  .sb-meta{display:flex;justify-content:space-between;align-items:center;margin-top:5px;font-size:11.5px;color:#7a6a52;font-weight:600;}
+  .sb-meta .freezes{color:var(--sky-deep);}
+
+  /* mystery box button */
+  .mysterybox{display:block;width:100%;margin:0 0 14px;border:none;border-radius:14px;cursor:pointer;
+    background:linear-gradient(100deg,var(--berry),var(--sun-deep));color:#fff;font-family:'Spline Sans';
+    font-weight:700;font-size:14.5px;padding:13px;animation:wiggle 1.4s ease-in-out infinite;}
+  @keyframes wiggle{0%,100%{transform:rotate(0);}25%{transform:rotate(-1.5deg);}75%{transform:rotate(1.5deg);}}
+  .mysterybox:active{transform:scale(.97);}
+
+  /* box reveal modal */
+  .box-modal{text-align:center;max-width:360px;padding:34px 26px 26px;}
+  .box-shake{font-size:72px;animation:boxshake .35s ease-in-out infinite;}
+  @keyframes boxshake{0%,100%{transform:rotate(-8deg) scale(1);}50%{transform:rotate(8deg) scale(1.08);}}
+  .box-cap{font-family:'Fraunces';font-weight:600;font-size:18px;margin-top:12px;color:var(--berry);}
+  .box-prize{font-size:76px;animation:prizepop .4s cubic-bezier(.4,1.6,.5,1);}
+  @keyframes prizepop{from{transform:scale(0) rotate(-20deg);}to{transform:scale(1) rotate(0);}}
+  .box-txt{font-family:'Fraunces';font-weight:900;font-size:23px;line-height:1.2;margin:10px 0 4px;}
+  .box-sub{font-size:13px;color:#7a6a52;margin-bottom:20px;}
+  .box-close{background:var(--leaf);color:#fff;border:none;font-family:'Spline Sans';font-weight:700;
+    font-size:16px;padding:12px 36px;border-radius:14px;cursor:pointer;}
+  .box-close:active{transform:scale(.96);}
   .grade{font-size:11px;color:#9a8a70;letter-spacing:.06em;text-transform:uppercase;margin-bottom:13px;}
 
   /* phone gate banner */
@@ -228,6 +257,14 @@
   @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
   .panel .card + .card{margin-top:18px;}
   .lab-card{background:linear-gradient(160deg,#fbf4e8,#efe3cf);}
+  .spark{background:rgba(166,64,107,.07);border:1.5px solid rgba(166,64,107,.2);border-radius:14px;
+    padding:14px 15px;margin-bottom:16px;}
+  .spark-q{font-family:'Fraunces';font-weight:600;font-size:17px;line-height:1.3;color:#7a3458;margin-bottom:11px;}
+  .spark-q.pop{animation:sparkpop .28s ease;}
+  @keyframes sparkpop{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:none;}}
+  .spark-btn{background:var(--berry);color:#fff;border:none;font-family:'Spline Sans';font-weight:700;font-size:14px;
+    padding:9px 18px;border-radius:999px;cursor:pointer;transition:transform .08s;}
+  .spark-btn:active{transform:scale(.96);}
   /* in single-kid view the inner kidcard needs no extra border treatment */
   .onekid .kidcard{border:none;box-shadow:none;background:transparent;padding:0;}
   .onekid .kidcard.ellie,.onekid .kidcard.carli{border-top:none;}
@@ -291,6 +328,10 @@
     <div class="card lab-card">
       <h2>💡 Idea Lab <span class="tag" style="background:var(--berry)">Weekly</span></h2>
       <div class="sub">Once a week: find a problem, use AI to help, and notice where it's wrong. Not a perfect app — a sharper brain.</div>
+      <div class="spark" id="spark-ellie">
+        <div class="spark-q" id="sparkQ-ellie">Not sure where to start? Tap for a spark. 👇</div>
+        <button class="spark-btn" data-kid="ellie">✨ Spark an idea</button>
+      </div>
       <div class="week-pick" id="weekPick-ellie"></div>
       <div id="logForm-ellie"></div>
     </div>
@@ -305,6 +346,10 @@
     <div class="card lab-card">
       <h2>💡 Idea Lab <span class="tag" style="background:var(--berry)">Weekly</span></h2>
       <div class="sub">Once a week: find a problem, use AI to help, and notice where it's wrong. Not a perfect app — a sharper brain.</div>
+      <div class="spark" id="spark-carli">
+        <div class="spark-q" id="sparkQ-carli">Not sure where to start? Tap for a spark. 👇</div>
+        <button class="spark-btn" data-kid="carli">✨ Spark an idea</button>
+      </div>
       <div class="week-pick" id="weekPick-carli"></div>
       <div id="logForm-carli"></div>
     </div>
@@ -339,6 +384,11 @@
   </section>
 
   <footer>Shared across the family &middot; Syncs on every device</footer>
+
+  <!-- mystery box reveal modal -->
+  <div class="modal-overlay" id="boxModal">
+    <div class="modal box-modal" id="boxInner"></div>
+  </div>
 
   <!-- event add/edit modal -->
   <div class="modal-overlay" id="eventModal">
@@ -517,6 +567,89 @@ const LAB_Q = [
   {id:"next",q:"What would you change next time?",h:"About your idea, or about how you asked."}
 ];
 
+/* Spark banks — tailored per kid, in a curious-person voice (not a worksheet).
+   Grouped by angle so each tap nudges a different way of noticing problems.
+   Light money thread in both; "slow down before asking" woven in gently. */
+const SPARKS_BY_KID = {
+  ellie: [
+    // friends (her biggest vein)
+    "What's always a hassle when you're trying to make plans with your friends?",
+    "What does your friend group struggle to agree on — and could something help?",
+    "What's a thing you wish made it easier to stay in the loop with friends?",
+    "When everyone's trying to figure out who's doing what, what goes wrong?",
+    "What's something a friend complains about a lot?",
+    // babysitting (real job, real money)
+    "What's the trickiest part of babysitting four kids at once?",
+    "If you could have one tool while babysitting, what would it do?",
+    "How do you keep four kids busy and happy — is there a part that's always hard?",
+    "What's something that would make a babysitting day go smoother?",
+    // money (light thread)
+    "You're earning real money this summer — what's confusing about keeping track of it?",
+    "If you wanted to save up for something, how would you keep yourself on track?",
+    "What would help you remember where your babysitting money actually goes?",
+    // discipline / her strengths
+    "You're good at getting things done — what system do you use that others might want?",
+    "What's something you stay on top of that most people forget?",
+    // softball
+    "Anything annoying about keeping track of softball — schedule, gear, stats?",
+    "What's something you're working to get better at? Could a tool help you practice?",
+    // slow-down value
+    "Think of a problem that didn't click right away — what helped you work through it?",
+    "What's a question worth sitting and thinking about before you Google it?",
+    // Maddie / home
+    "If Maddie could text you, what would you want her to be able to say?",
+    "What's something around the house that's more annoying than it needs to be?",
+    // wish-it-existed / curiosity
+    "Finish this: 'I really wish there was a way to ___.'",
+    "What's an app you wish existed but doesn't?",
+    "What were you curious about today but never looked up?",
+    "If you could learn how ONE thing works, what would it be?",
+    // reframe an idea
+    "Got an idea already? Who'd actually use it, and why would they bother?",
+    "Think of your idea — what's the part that might NOT work? Start there.",
+    "Pick something you use every day. How could it be 10% better?"
+  ],
+  carli: [
+    // theatre-kid / imagination
+    "If you could invent something for a character in a movie like Incredibles, what would it do?",
+    "What's something in a movie where you thought 'I wish that was real'?",
+    "If you made up a brand-new show, what problem would the hero have to solve?",
+    "What's something you imagine that doesn't exist yet — but you wish it did?",
+    // Maddie (she loves the dog)
+    "If Maddie could tell you one thing she wants, what do you think it'd be?",
+    "What's something that would make taking care of Maddie easier or more fun?",
+    // bracelets (light — one or two, not a theme)
+    "What's the most annoying part of selling your bracelets? Could something help?",
+    "How do you decide which bracelets to make — could you figure out what people want first?",
+    // money (light thread, age 10)
+    "When you earn money, how do you decide whether to spend it or save it?",
+    "What's a fun way you could keep track of the money you make?",
+    "If you were saving up for something special, how would you remember to?",
+    // things that annoy her
+    "What's something that made you go 'ugh' this week?",
+    "What's a thing you have to do that takes way too long?",
+    "Is there something in your room that's always a little annoying or messy?",
+    "What do you and your sister argue about most? Could something fix it?",
+    // slow-down value (gentle, for the homework frustration)
+    "When something's hard and the answer won't come — what helps you figure it out?",
+    "What's something worth thinking about quietly for a minute before asking for help?",
+    // helping someone (her warmth)
+    "Who seems stressed or busy lately — what little thing could help them?",
+    "If you could make one thing easier for Mom or Dad, what would it be?",
+    // wish-it-existed
+    "If you had a robot helper for ONE thing, what would you make it do?",
+    "Finish this: 'I really wish there was a way to ___.'",
+    "If you could invent one thing to make your day easier, what would it be?",
+    // curiosity
+    "What's something you were curious about today?",
+    "What's a question you've always wondered about?",
+    "If you could learn how one thing works, what would it be?",
+    // build / make
+    "What's something you wish was easier to make or build?",
+    "Pick something you use every day — how could it be a little better?"
+  ]
+};
+
 /* ============ STATE / STORAGE (synced) ============ */
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxaFEPiaFdq3twP4bV6BD1yTovng7y0_O9HgXvx1n8S5I6nvflufn8xHbbVmVVLnHkusg/exec";
 const LS_KEY = "summerHub_v1"; // local cache / offline fallback
@@ -526,7 +659,13 @@ let syncState = "loading";     // loading | synced | syncing | offline
 let pendingWrite = false;      // a write is queued
 let writeTimer = null;
 
-function blank(){ return {checks:{},log:{},sched:{},dels:{},seeded:false}; }
+function blank(){ return {checks:{},log:{},sched:{},dels:{},seeded:false,game:{}}; }
+/* game state per kid: {best, freezes, awarded:[milestones], pending:[box ids], opened:[{milestone,reward,ts}]} */
+function gameFor(kid){
+  DB.game=DB.game||{};
+  if(!DB.game[kid]) DB.game[kid]={best:0,freezes:0,awarded:[],pending:[],opened:[]};
+  return DB.game[kid];
+}
 function loadLocal(){
   try{ return Object.assign(blank(), JSON.parse(localStorage.getItem(LS_KEY))||{}); }
   catch(e){ return blank(); }
@@ -658,10 +797,32 @@ let viewDate = new Date();
 
 /* events for a day come entirely from the synced store (DB.sched), which was
    seeded from the base schedule once and is now the source of truth.
-   All events are editable. */
+   All events are editable. Sorted: all-day/no-time first, then by start time. */
 function eventsFor(key){
   const list=(DB.sched[key]||[]).map(e=>({...e}));
-  return list;
+  return list.sort((a,b)=>startMins(a)-startMins(b));
+}
+/* Parse a free-text time into minutes-since-midnight for sorting.
+   No time (or travel/all-day) sorts first (-1). Heuristic AM/PM:
+   explicit a/p wins; bare hours 7-11 = morning, 1-6 = afternoon/evening, 12 = noon. */
+function startMins(ev){
+  if(ev.travel) return -1;                 // all-day travel banner first
+  const tm=(ev.tm||"").trim();
+  if(!tm) return -1;                        // no time = all-day, sort first
+  // take the part before any dash/en-dash as the start
+  const start=tm.split(/[–\-—]/)[0].trim().toLowerCase();
+  const m=start.match(/^(\d{1,2})(?::(\d{2}))?\s*(a|p|am|pm)?/);
+  if(!m) return 9999;                       // unparseable -> sort to the end
+  let h=parseInt(m[1],10);
+  const min=m[2]?parseInt(m[2],10):0;
+  const mer=m[3]?m[3][0]:null;              // 'a' or 'p' or null
+  if(mer==='p'){ if(h<12) h+=12; }
+  else if(mer==='a'){ if(h===12) h=0; }
+  else {                                    // no am/pm given — infer
+    if(h>=1 && h<=6) h+=12;                 // 1-6 => afternoon/evening
+    // 7-11 stay morning; 12 stays noon
+  }
+  return h*60+min;
 }
 
 /* ============ RENDER: schedule ============ */
@@ -776,6 +937,10 @@ function renderOneKid(kid){
   const reqDone=REQUIRED[kid].every(t=>checks[t.id]);
   const complete=reqDone && picksDone>=PICK_COUNT;
   const streak=calcStreak(kid);
+  const g=gameFor(kid);
+  const nextM=MILESTONES.find(m=>m>streak)||null;
+  const prevM=[...MILESTONES].reverse().find(m=>m<=streak)||0;
+  const barPct = nextM ? Math.round(((streak-prevM)/(nextM-prevM))*100) : 100;
   const lab=labWeekStatus(kid);
   const labCls = lab.done ? "lab-done" : (lab.flag ? "lab-flag" : "lab-todo");
   const labIcon = lab.done ? "✓" : (lab.flag ? "⚠️" : "💡");
@@ -788,8 +953,16 @@ function renderOneKid(kid){
   card.innerHTML=`
     <div class="kidhead">
       <div class="nm ${meta.cls}">${meta.name}</div>
-      <div class="streak">🔥 <b>${streak}</b></div>
+      <div class="streak">🔥 <b>${streak}</b><span class="best">best ${g.best||0}</span></div>
     </div>
+    <div class="streakbar">
+      <div class="sb-track"><div class="sb-fill" style="width:${barPct}%"></div></div>
+      <div class="sb-meta">
+        <span>${nextM?`${nextM-streak} day${nextM-streak===1?'':'s'} to next surprise`:'Maxed out — legend.'}</span>
+        <span class="freezes" title="Streak freezes protect a missed day">❄️ ${g.freezes}</span>
+      </div>
+    </div>
+    ${g.pending.length?`<button class="mysterybox" data-kid="${kid}">🎁 You earned a mystery box — tap to open!</button>`:''}
     <div class="phone ${complete?'on':''}">
       <span class="lock">${complete?'🔓':'🔒'}</span>
       <span class="ptxt">${complete?'Phone unlocked — nice.':'Phone locked'}</span>
@@ -835,23 +1008,159 @@ function renderOneKid(kid){
   });
 
   host.appendChild(card);
+
+  // wire mystery box button if present
+  const mb=card.querySelector(".mysterybox");
+  if(mb) mb.onclick=()=>revealBox(kid);
 }
 function toggle(kid,id){
   const key=ymd(new Date());
   DB.checks[key]=DB.checks[key]||{};
   DB.checks[key][kid]=DB.checks[key][kid]||{};
   DB.checks[key][kid][id]=!DB.checks[key][kid][id];
+  processGame(kid);          // update streak, milestones, freezes
   save();renderOneKid(kid);renderHistory();
 }
+/* ============ GAMIFICATION ============ */
+const MILESTONES=[3,5,10,15,20,30];
+/* ============================================================
+   MYSTERY BOX REWARDS — edit freely. Each reward has:
+     icon, txt : what the kid sees
+     type      : "treat" (you honor IRL) or "whimsy" (in-app only)
+     tier      : "whimsy" | "small" | "mid" | "big"  — drives the RAMP
+   The ramp: at each milestone, tiers are weighted differently so better
+   prizes get more likely as the streak grows. Two slots are GUARANTEED:
+     • Day 5  → always a "mid" or better treat (the early "wow")
+     • Day 30 → always a "big" treat (the summit payoff)
+   TIER_WEIGHTS below controls the ramp. To tune how fast money/treats ramp,
+   edit those numbers — not the rewards themselves.
+   ============================================================ */
+const REWARDS=[
+  // whimsy — in-app only, common early, fade later
+  {icon:"🎉", type:"whimsy", tier:"whimsy", txt:"Confetti! You're officially on a roll."},
+  {icon:"🏆", type:"whimsy", tier:"whimsy", txt:"Trophy unlocked for the Hall of Fame."},
+  {icon:"🔥", type:"whimsy", tier:"whimsy", txt:"You're on fire. Seriously, look at you go."},
+  {icon:"⭐", type:"whimsy", tier:"whimsy", txt:"Gold star. Old school, but you earned it."},
+  {icon:"🎮", type:"whimsy", tier:"whimsy", txt:"Level up! Achievement unlocked."},
+  {icon:"😎", type:"whimsy", tier:"whimsy", txt:"Legend status. Certified."},
+  {icon:"🚀", type:"whimsy", tier:"whimsy", txt:"Unstoppable. To the moon."},
+  {icon:"🥇", type:"whimsy", tier:"whimsy", txt:"Certified Awesome. It's official."},
+  // small treats — low-cost, fun
+  {icon:"🍦", type:"treat", tier:"small", txt:"Ice cream run!"},
+  {icon:"🌙", type:"treat", tier:"small", txt:"Stay up 30 minutes late."},
+  {icon:"🧹", type:"treat", tier:"small", txt:"Chore-free pass — skip one required task."},
+  // mid treats — the "wow" range
+  {icon:"🎬", type:"treat", tier:"mid", txt:"You pick the next family movie."},
+  {icon:"🍽️", type:"treat", tier:"mid", txt:"You pick where we go for dinner."},
+  {icon:"📱", type:"treat", tier:"mid", txt:"Extra 30 minutes of phone downtime tonight."},
+  {icon:"💵", type:"treat", tier:"mid", txt:"$5 — nice work."},
+  // big treats — summit prizes
+  {icon:"🌴", type:"treat", tier:"big", txt:"Full chore-free DAY — skip all required tasks today."},
+  {icon:"🛌", type:"treat", tier:"big", txt:"Friend sleepover unlocked (ask first)."},
+  {icon:"💫", type:"treat", tier:"big", txt:"One-on-one outing with Mom or Dad."},
+  {icon:"💰", type:"treat", tier:"big", txt:"$10 — that's a real streak."}
+];
+/* THE RAMP: weight of each tier at each milestone.
+   Higher = more likely. Read each row as "at day N, how much do we favor each tier."
+   Whimsy fades, small/mid/big rise as the streak grows. */
+const TIER_WEIGHTS = {
+  //        whimsy small mid big
+  3:  { whimsy:10, small:3,  mid:1,  big:0 },  // first taste — mostly whimsy
+  5:  { whimsy:0,  small:6,  mid:6,  big:0 },  // GUARANTEED mid+ (no whimsy) — the early wow
+  10: { whimsy:5,  small:6,  mid:5,  big:1 },  // ramp begins, big now possible
+  15: { whimsy:3,  small:5,  mid:6,  big:3 },  // mid/big climbing
+  20: { whimsy:1,  small:3,  mid:6,  big:6 },  // big genuinely likely
+  30: { whimsy:0,  small:0,  mid:0,  big:1 }   // GUARANTEED big — summit payoff
+};
+function pickReward(milestone){
+  const w = TIER_WEIGHTS[milestone] || TIER_WEIGHTS[30];
+  // build a weighted pool: each reward's weight = its tier's weight at this milestone
+  const pool=[];
+  REWARDS.forEach(r=>{ const tw=w[r.tier]||0; if(tw>0) pool.push({r,tw}); });
+  if(!pool.length){ // safety: fall back to any treat
+    const t=REWARDS.filter(r=>r.type==="treat"); return t[Math.floor(Math.random()*t.length)];
+  }
+  const total=pool.reduce((s,p)=>s+p.tw,0);
+  let roll=Math.random()*total;
+  for(const p of pool){ roll-=p.tw; if(roll<=0) return p.r; }
+  return pool[pool.length-1].r;
+}
+
+/* freeze-aware streak: walk back from today; a missed day is forgiven if a freeze
+   is available to "cover" it. Returns {streak, usedFreezes} for display/logic. */
 function calcStreak(kid){
-  let s=0;const d=new Date();
-  for(let n=0;n<120;n++){
+  const g=gameFor(kid);
+  let s=0, freezesLeft=g.freezes, d=new Date();
+  // today itself: if not complete yet, don't break — just start counting from yesterday
+  for(let n=0;n<200;n++){
     const k=ymd(d);
     const c=(DB.checks[k]&&DB.checks[k][kid])||{};
-    if(dayComplete(c,kid))s++; else break;
+    const complete=dayComplete(c,kid);
+    if(complete){ s++; }
+    else {
+      if(n===0){ /* today not done yet — neutral, keep counting prior days */ }
+      else if(freezesLeft>0){ freezesLeft--; /* freeze covers this gap, chain survives */ }
+      else break;
+    }
     d.setDate(d.getDate()-1);
   }
   return s;
+}
+
+/* process today's completion: update best streak, award milestone boxes,
+   bank earned freezes. Called whenever a kid's checks change. */
+function processGame(kid){
+  const g=gameFor(kid);
+  const streak=calcStreak(kid);
+  if(streak>(g.best||0)) g.best=streak;
+
+  // award a mystery box the first time each milestone is reached
+  MILESTONES.forEach(m=>{
+    if(streak>=m && !g.awarded.includes(m)){
+      g.awarded.push(m);
+      g.pending.push(m); // a box waiting to be opened at this milestone
+    }
+  });
+
+  // earn a freeze for going ABOVE the day's bar (a 4th pick or full Idea Lab today)
+  const key=ymd(new Date());
+  const c=(DB.checks[key]&&DB.checks[key][kid])||{};
+  const picks=OPTIONS[kid].reduce((n,grp)=>n+grp.items.filter(o=>c[o.id]).length,0);
+  const labDone=labWeekStatus(kid).done;
+  const earnedToday=(picks>=4)||labDone;
+  // track that today's freeze was granted so we don't double-count
+  g._freezeDays=g._freezeDays||[];
+  if(earnedToday && !g._freezeDays.includes(key) && g.freezes<2){
+    g.freezes++; g._freezeDays.push(key);
+  }
+}
+function openBox(kid){
+  const g=gameFor(kid);
+  if(!g.pending.length) return null;
+  const milestone=g.pending.shift();
+  const reward=pickReward(milestone);
+  const rec={milestone,reward,ts:Date.now()};
+  g.opened.unshift(rec);
+  save();
+  return rec;
+}
+/* animated reveal: show the box, let it "shake", then reveal the prize */
+function revealBox(kid){
+  const rec=openBox(kid);
+  if(!rec) return;
+  const ov=document.getElementById("boxModal");
+  const inner=document.getElementById("boxInner");
+  ov.classList.add("open");
+  inner.innerHTML=`<div class="box-shake">🎁</div><div class="box-cap">Day ${rec.milestone} streak!</div>`;
+  setTimeout(()=>{
+    const r=rec.reward;
+    inner.innerHTML=`
+      <div class="box-prize">${r.icon}</div>
+      <div class="box-txt">${esc(r.txt)}</div>
+      <div class="box-sub">${r.type==='treat'?'Show Mom or Dad to claim it.':'Just for you. 😄'}</div>
+      <button class="box-close" id="boxClose">Yes!</button>`;
+    document.getElementById("boxClose").onclick=()=>{ ov.classList.remove("open"); renderOneKid(kid); };
+  }, 1100);
 }
 /* Idea Lab weekly status for the CURRENT week.
    done  = all 4 prompts filled for this week
@@ -924,6 +1233,16 @@ function weekList(){
 function renderLab(){
   ["ellie","carli"].forEach(renderOneLab);
 }
+/* Spark: hand out a fresh question each tap, no repeats until the bank cycles.
+   Per-kid shuffled queue so Ellie and Carli don't get the same order. */
+const sparkQueue={ellie:[],carli:[]};
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function nextSpark(kid){
+  if(!sparkQueue[kid].length) sparkQueue[kid]=shuffle(SPARKS_BY_KID[kid]||[]);
+  const q=sparkQueue[kid].shift();
+  const el=document.getElementById("sparkQ-"+kid);
+  if(el){ el.textContent=q; el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); }
+}
 function renderOneLab(kid){
   const wp=document.getElementById("weekPick-"+kid);
   const f=document.getElementById("logForm-"+kid);
@@ -986,7 +1305,7 @@ function watchRollover(){
 function setTab(name){
   document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("on",b.dataset.tab===name));
   document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("on",p.id==="panel-"+name));
-  window.scrollTo(0,0);
+  try{ window.scrollTo(0,0); }catch(e){}
 }
 
 /* ============ wire up ============ */
@@ -995,6 +1314,7 @@ document.getElementById("prevDay").onclick=()=>{viewDate.setDate(viewDate.getDat
 document.getElementById("nextDay").onclick=()=>{viewDate.setDate(viewDate.getDate()+1);if(viewDate<=SUMMER_END)renderDay();else viewDate.setDate(viewDate.getDate()-1);};
 document.getElementById("jumpToday").onclick=()=>{viewDate=new Date();renderDay();};
 document.getElementById("addEventBtn").onclick=()=>openEventModal(ymd(viewDate), null);
+document.querySelectorAll(".spark-btn").forEach(b=>b.onclick=()=>nextSpark(b.dataset.kid));
 document.getElementById("emSave").onclick=saveEventModal;
 document.getElementById("emCancel").onclick=closeEventModal;
 document.getElementById("emClose").onclick=closeEventModal;
