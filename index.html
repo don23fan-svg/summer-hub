@@ -538,7 +538,7 @@ const OPTIONS = {
       {id:"outside",lbl:"20 min outside, no phone",t:"20m"},
       {id:"workout",lbl:"Workout or stretch routine",t:"15m"}
     ]},
-    {cat:"Home & self", items:_HOME},
+    {cat:"Home & self", items:_HOME.concat([{id:"dog",lbl:"Walk Maddie",t:"10m"}])},
     {cat:"Make / create", items:_MAKE}
   ],
   carli:[
@@ -797,32 +797,10 @@ let viewDate = new Date();
 
 /* events for a day come entirely from the synced store (DB.sched), which was
    seeded from the base schedule once and is now the source of truth.
-   All events are editable. Sorted: all-day/no-time first, then by start time. */
+   All events are editable. */
 function eventsFor(key){
   const list=(DB.sched[key]||[]).map(e=>({...e}));
-  return list.sort((a,b)=>startMins(a)-startMins(b));
-}
-/* Parse a free-text time into minutes-since-midnight for sorting.
-   No time (or travel/all-day) sorts first (-1). Heuristic AM/PM:
-   explicit a/p wins; bare hours 7-11 = morning, 1-6 = afternoon/evening, 12 = noon. */
-function startMins(ev){
-  if(ev.travel) return -1;                 // all-day travel banner first
-  const tm=(ev.tm||"").trim();
-  if(!tm) return -1;                        // no time = all-day, sort first
-  // take the part before any dash/en-dash as the start
-  const start=tm.split(/[–\-—]/)[0].trim().toLowerCase();
-  const m=start.match(/^(\d{1,2})(?::(\d{2}))?\s*(a|p|am|pm)?/);
-  if(!m) return 9999;                       // unparseable -> sort to the end
-  let h=parseInt(m[1],10);
-  const min=m[2]?parseInt(m[2],10):0;
-  const mer=m[3]?m[3][0]:null;              // 'a' or 'p' or null
-  if(mer==='p'){ if(h<12) h+=12; }
-  else if(mer==='a'){ if(h===12) h=0; }
-  else {                                    // no am/pm given — infer
-    if(h>=1 && h<=6) h+=12;                 // 1-6 => afternoon/evening
-    // 7-11 stay morning; 12 stays noon
-  }
-  return h*60+min;
+  return list;
 }
 
 /* ============ RENDER: schedule ============ */
